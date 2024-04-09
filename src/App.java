@@ -1,35 +1,33 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.ResultSet;
 
 public class App {
     public static void main(String[] args) {
-        System.out.println("Connection Testing");
-        Connection conn = null;
         try {
-            // Load the MySQL JDBC driver
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            
-            String userName = "root";
-            String password = "dhanujatoor";
-            String url = "jdbc:mysql://localhost:3306/test";
+            Connection connection = DriverManager.getConnection(
+                    "jdbc:mysql://127.0.0.1:3306/test",
+                    "root",
+                    "dhanujatoor"
+            );
 
-            // Establish connection
-            conn = DriverManager.getConnection(url, userName, password);
-            System.out.println("Connection Established");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("MySQL JDBC Driver not found.");
-            ex.printStackTrace();
-        } catch (SQLException ex) {
-            System.out.println("Connection Failed");
-            ex.printStackTrace();
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                    System.out.println("Connection Closed");
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM users"); // Corrected typo
+
+            while (resultSet.next()) {
+                System.out.println(resultSet.getString("username"));
+                System.out.println(resultSet.getString("email"));
             }
+
+            // Close the ResultSet, Statement, and Connection
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+
     }
 }
